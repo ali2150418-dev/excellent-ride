@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #07080b;
+  --color-ink-2: #0d0f14;
+  --color-ink-3: #151821;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-gold: #f5a524;
+  --color-gold-soft: #ffc861;
+  --color-gold-deep: #c97d0a;
+  --color-cream: #f6f3ec;
+  --color-mist: #a3a8b4;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-rev: marquee-rev 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+
+  --animate-kenburns: kenburns 9s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-scroll-dot: scroll-dot 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+
+  @keyframes kenburns {
+    from { transform: scale(1.18); }
+    to { transform: scale(1.02); }
+  }
+  @keyframes scroll-dot {
+    0% { transform: translateY(0); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translateY(14px); opacity: 0; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marquee-rev {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-ink);
+}
+
+body {
+  background: var(--color-ink);
+  color: #ececee;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Arabic: swap the type system, keep brand/latin glyphs from Jakarta */
+html[lang="ar"] {
+  --font-sans: var(--font-plex-ar), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-ruqaa), var(--font-instrument), serif;
+}
+html[lang="ar"] .font-serif {
+  font-style: normal;
+}
+html[lang="ar"] .tracking-tight-ar,
+html[lang="ar"] [class*="tracking-[-"] {
+  letter-spacing: 0;
+}
+html[lang="ar"] [class*="uppercase"] {
+  letter-spacing: 0.02em;
+}
+
+@media (pointer: fine) {
+  html.has-cursor, html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@utility text-gradient-gold {
+  background: linear-gradient(100deg, #ffd88a 0%, #f5a524 45%, #c97d0a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glass {
+  background: rgb(13 15 20 / 0.6);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+@utility mask-fade-b {
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* If scripts are slow to hydrate, lift the intro curtain anyway */
+@keyframes intro-failsafe {
+  to { clip-path: inset(0 0 100% 0); visibility: hidden; }
+}
+.intro-failsafe {
+  animation: intro-failsafe 0.8s cubic-bezier(0.22, 1, 0.36, 1) 4s forwards;
+}
