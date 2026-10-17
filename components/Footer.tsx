@@ -1,103 +1,74 @@
-"use client"
 import Link from "next/link"
-import { Mail, MapPin, Phone } from "lucide-react"
-import { contact, navKeys } from "@/lib/data"
-import { useI18n } from "@/components/I18nProvider"
-import { Container } from "@/components/ui"
-import { Logo } from "@/components/Header"
-import { FacebookIcon, InstagramIcon, WhatsAppIcon } from "@/components/icons"
+import { Mail, Phone } from "lucide-react"
+import { contact } from "@/lib/site"
+import { Logo } from "./Header"
+import { Facebook, Instagram, Pinterest } from "./social"
 
 export function Footer() {
-  const { dict, href } = useI18n()
-  const year = new Date().getFullYear()
   return (
-    <footer className="relative overflow-hidden border-t border-white/[0.06] bg-ink-2 pt-20">
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-gold/10 blur-[120px]" />
-      <Container className="relative">
-        <div className="grid gap-12 pb-16 md:grid-cols-2 lg:grid-cols-12">
-          <div className="lg:col-span-4">
+    <footer className="bg-[#111113] text-[#f3f3f1]">
+      <div className="container-x py-16">
+        <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr_1.3fr]">
+          <div>
             <Logo />
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-mist">{dict.footer.about}</p>
-            <div className="mt-6 flex gap-3">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/65">
+              At Excellent Ride, we’re further than just a driver service; we’re your trusted mate in safe, accessible,
+              and dependable transportation across the stunning megacity of Dubai.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-display text-base font-semibold">Quick Links</h3>
+            <ul className="mt-5 grid gap-3 text-sm text-white/70">
               {[
-                { href: contact.social.facebook, Icon: FacebookIcon, label: "Facebook" },
-                { href: contact.social.instagram, Icon: InstagramIcon, label: "Instagram" },
-                { href: contact.whatsapp, Icon: WhatsAppIcon, label: "WhatsApp" },
-              ].map(({ href: h, Icon, label }) => (
-                <a
-                  key={label}
-                  href={h}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/70 transition hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-white">{dict.footer.company}</h4>
-            <ul className="mt-5 space-y-3 text-sm">
-              {navKeys.map((l) => (
-                <li key={l.key}>
-                  <Link href={href(l.href)} className="text-mist transition hover:text-gold">
-                    {dict.nav[l.key]}
+                ["Home", "/"],
+                ["About us", "/about"],
+                ["Services", "/services"],
+                ["Pricing", "/pricing"],
+                ["Contact us", "/contact"],
+              ].map(([l, h]) => (
+                <li key={h}>
+                  <Link href={h} className="transition hover:text-accent">
+                    {l}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="lg:col-span-3">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-white">{dict.footer.services}</h4>
-            <ul className="mt-5 space-y-3 text-sm">
-              {dict.services.slice(0, 7).map((s) => (
-                <li key={s.slug}>
-                  <Link href={href(`/services/${s.slug}`)} className="text-mist transition hover:text-gold">
-                    {s.title}
-                  </Link>
-                </li>
-              ))}
+          <div>
+            <h3 className="font-display text-base font-semibold">Follow us</h3>
+            <ul className="mt-5 grid gap-3 text-sm text-white/70">
+              <li>
+                <a href={contact.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition hover:text-accent">
+                  <Facebook size={16} /> Facebook
+                </a>
+              </li>
+              <li>
+                <a href={contact.pinterest} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition hover:text-accent">
+                  <Pinterest size={16} /> Pinterest
+                </a>
+              </li>
+              <li>
+                <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition hover:text-accent">
+                  <Instagram size={16} /> Instagram
+                </a>
+              </li>
             </ul>
           </div>
 
-          <div className="lg:col-span-3">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-white">{dict.footer.contact}</h4>
-            <ul className="mt-5 space-y-4 text-sm">
-              <li>
-                <a href={contact.phoneHref} className="flex items-start gap-3 text-mist transition hover:text-white">
-                  <Phone className="mt-0.5 h-4 w-4 text-gold" /> <span dir="ltr">{contact.phone}</span>
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contact.email}`} className="flex items-start gap-3 text-mist transition hover:text-white">
-                  <Mail className="mt-0.5 h-4 w-4 text-gold" /> {contact.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-3 text-mist">
-                <MapPin className="mt-0.5 h-4 w-4 text-gold" /> {dict.company.city}
-              </li>
-            </ul>
+          <div>
+            <h3 className="font-display text-base font-semibold leading-snug">
+              CALL NOW - Solution Of All CHAUFFEUR SERVICE Needs in DUBAI.
+            </h3>
+            <a href={contact.phoneHref} className="mt-5 flex items-center gap-2 font-semibold text-accent">
+              <Phone size={17} /> {contact.phone}
+            </a>
+            <a href={`mailto:${contact.email}`} className="mt-3 flex items-center gap-2 text-sm text-white/70 hover:text-accent">
+              <Mail size={16} /> {contact.email}
+            </a>
           </div>
         </div>
-      </Container>
-
-      <div className="relative select-none overflow-hidden" dir="ltr" aria-hidden>
-        <p className="mask-fade-b whitespace-nowrap text-center text-[12.5vw] font-extrabold leading-[0.8] tracking-tighter text-white/[0.04]">
-          EXCELLENT RIDE
-        </p>
-      </div>
-
-      <div className="border-t border-white/[0.06]">
-        <Container className="flex flex-col items-center justify-between gap-3 py-6 text-xs text-mist sm:flex-row">
-          <p>
-            © {year} {dict.company.legalName}. {dict.footer.rights}
-          </p>
-          <p>{dict.footer.strip}</p>
-        </Container>
       </div>
     </footer>
   )
