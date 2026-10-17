@@ -1,223 +1,169 @@
 "use client"
-import { useState } from "react"
+
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion"
-import { ArrowUpRight, ChevronDown, Globe, Menu, Phone, X } from "lucide-react"
-import { contact, navKeys } from "@/lib/data"
-import { localePath, stripLocale } from "@/lib/i18n"
-import { useI18n } from "@/components/I18nProvider"
-import { ServiceIcon } from "@/components/icons"
-import { ScrollProgress, ease } from "@/components/motion"
-import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
+import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react"
+import { contact, nav, services } from "@/lib/site"
+import { ThemeToggle } from "./ThemeToggle"
 
-export function Logo({ className }: { className?: string }) {
-  const { dict, href } = useI18n()
+export function Logo({ className = "" }: { className?: string }) {
   return (
-    <Link href={href("/")} className={cn("group flex items-center gap-3", className)} aria-label={dict.company.name}>
-      <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-1 ring-gold/40 transition-transform duration-500 group-hover:rotate-[-12deg]">
-        <Image src="/img/logo-badge.png" alt="" fill sizes="44px" className="scale-[1.04] object-cover" priority />
+    <Link href="/" className={`flex items-center gap-3 ${className}`} aria-label="Excellent Ride home">
+      <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-full">
+        <Image
+          src="/site/Excellent_Ride_Logo-01-01-01-removebg-preview.png"
+          alt=""
+          width={193}
+          height={87}
+          className="absolute -left-[3px] -top-[5px] max-w-none"
+          priority
+        />
       </span>
-      <span className="leading-none" dir="ltr">
-        <span className="block text-[15px] font-extrabold tracking-[0.18em] text-white">EXCELLENT RIDE</span>
-        <span className="mt-1 block text-[9.5px] font-medium tracking-[0.28em] text-mist">FLEET VEHICLE MANAGEMENT</span>
+      <span className="leading-none">
+        <span className="block whitespace-nowrap font-display text-base font-semibold tracking-tight sm:text-lg">EXCELLENT RIDE</span>
+        <span className="mt-1 hidden whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.14em] opacity-60 min-[400px]:block">
+          Fleet Vehicle Management LLC
+        </span>
       </span>
     </Link>
   )
 }
 
-function LangSwitch({ className }: { className?: string }) {
-  const { lang, dict } = useI18n()
-  const pathname = usePathname()
-  const target = lang === "en" ? "ar" : "en"
-  return (
-    <a
-      href={localePath(target, stripLocale(pathname))}
-      hrefLang={target}
-      className={cn(
-        "flex items-center gap-1.5 rounded-full border border-white/10 px-3.5 py-2 text-sm font-medium text-white/85 transition hover:border-gold/50 hover:text-white",
-        className,
-      )}
-    >
-      <Globe className="h-4 w-4 text-gold" />
-      <span className={target === "ar" ? "font-[family-name:var(--font-plex-ar)]" : ""}>{dict.nav.switchTo}</span>
-    </a>
-  )
-}
-
 export function Header() {
-  const { dict, href } = useI18n()
-  const pathname = stripLocale(usePathname())
-  const { scrollY } = useScroll()
-  const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [mega, setMega] = useState(false)
+  const [menu, setMenu] = useState(false)
 
-  useMotionValueEvent(scrollY, "change", (y) => {
-    const prev = scrollY.getPrevious() ?? 0
-    setScrolled(y > 40)
-    setHidden(y > 400 && y > prev && !open)
-  })
+  // Close menus after navigating (adjusting state during render, per React docs).
+  const [prevPath, setPrevPath] = useState(pathname)
+  if (prevPath !== pathname) {
+    setPrevPath(pathname)
+    setOpen(false)
+    setMenu(false)
+  }
 
-  const isActive = (p: string) => (p === "/" ? pathname === "/" : pathname.startsWith(p))
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : ""
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [open])
+
+  const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
+  const link = (href: string) =>
+    `rounded-lg px-4 py-2 text-[15px] font-medium transition hover:text-accent ${active(href) ? "text-accent" : ""}`
 
   return (
-    <>
-      <ScrollProgress />
-      <motion.header
-        animate={{ y: hidden ? "-110%" : "0%" }}
-        transition={{ duration: 0.45, ease }}
-        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5"
-      >
-        <div
-          className={cn(
-            "mx-auto flex max-w-7xl items-center justify-between rounded-2xl px-4 py-3 transition-all duration-500 sm:px-6",
-            scrolled || open ? "glass shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]" : "border border-transparent",
-          )}
-        >
+    <header className="sticky top-0 z-50">
+      <div className="hidden bg-accent text-[13px] font-semibold text-black md:block">
+        <div className="container-x flex h-10 items-center justify-between">
+          <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:underline">
+            <Mail size={14} /> {contact.email}
+          </a>
+          <a href={contact.phoneHref} className="flex items-center gap-2 hover:underline">
+            <Phone size={14} /> {contact.phone}
+          </a>
+        </div>
+      </div>
+
+      <div className="bg-[#0a0a0a] text-white">
+        <div className="container-x flex h-[76px] items-center justify-between gap-4">
           <Logo />
 
-          <nav className="hidden items-center gap-0.5 lg:flex" onMouseLeave={() => setMega(false)}>
-            {navKeys.map((l) =>
-              l.key === "services" ? (
-                <div key={l.key} className="relative" onMouseEnter={() => setMega(true)}>
-                  <Link
-                    href={href(l.href)}
-                    className={cn(
-                      "flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
-                      isActive(l.href) ? "text-gold" : "text-white/75 hover:text-white",
-                    )}
-                  >
-                    {dict.nav[l.key]}
-                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", mega && "rotate-180")} />
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+            {nav.map((n) =>
+              n.label === "Services" ? (
+                <div key={n.href} className="relative" onMouseEnter={() => setMenu(true)} onMouseLeave={() => setMenu(false)}>
+                  <Link href={n.href} className={`flex items-center gap-1 ${link(n.href)}`}>
+                    {n.label} <ChevronDown size={14} className={`transition ${menu ? "rotate-180" : ""}`} />
                   </Link>
-                  <AnimatePresence>
-                    {mega && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                        transition={{ duration: 0.3, ease }}
-                        className="absolute left-1/2 top-full w-[760px] -translate-x-1/2 pt-4"
-                      >
-                        <div className="glass grid grid-cols-3 gap-1 rounded-2xl bg-ink-2/95 p-3 shadow-2xl">
-                          {dict.services.map((s) => (
-                            <Link
-                              key={s.slug}
-                              href={href(`/services/${s.slug}`)}
-                              onClick={() => setMega(false)}
-                              className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-white/[0.05]"
-                            >
-                              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold transition-colors group-hover:bg-gold group-hover:text-ink">
-                                <ServiceIcon name={s.icon} className="h-4 w-4" />
-                              </span>
-                              <span>
-                                <span className="block text-sm font-semibold text-white">{s.title}</span>
-                                <span className="mt-0.5 line-clamp-2 block text-xs leading-relaxed text-mist">{s.short}</span>
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div
+                    className={`absolute left-0 top-full w-72 pt-3 transition ${
+                      menu ? "visible translate-y-0 opacity-100" : "invisible translate-y-2 opacity-0"
+                    }`}
+                  >
+                    <ul className="card p-2 shadow-[var(--shadow)]">
+                      {services.map((s) => (
+                        <li key={s.slug}>
+                          <Link href={`/services/${s.slug}`} className="block rounded-lg px-3 py-2 text-sm text-ink hover:bg-surface-2">
+                            {s.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ) : (
-                <Link
-                  key={l.key}
-                  href={href(l.href)}
-                  className={cn(
-                    "relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
-                    isActive(l.href) ? "text-gold" : "text-white/75 hover:text-white",
-                  )}
-                >
-                  {dict.nav[l.key]}
-                  {isActive(l.href) && (
-                    <motion.span layoutId="nav-dot" className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-gold" />
-                  )}
+                <Link key={n.href} href={n.href} className={link(n.href)}>
+                  {n.label}
                 </Link>
               ),
             )}
           </nav>
 
           <div className="flex items-center gap-2">
-            <LangSwitch className="hidden md:flex" />
-            <a
-              href={contact.phoneHref}
-              aria-label={contact.phone}
-              className="hidden h-10 w-10 place-items-center rounded-full border border-white/10 text-gold transition hover:border-gold/50 xl:grid"
-            >
-              <Phone className="h-4 w-4" />
+            <ThemeToggle />
+            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-primary hidden md:inline-flex">
+              Let&apos;s Ride Now!
             </a>
-            <Link
-              href={href("/contact")}
-              className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-gold-soft sm:flex lg:hidden xl:flex"
-            >
-              {dict.nav.book} <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" />
-            </Link>
             <button
-              onClick={() => setOpen((o) => !o)}
-              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white lg:hidden"
-              aria-label={open ? dict.nav.closeMenu : dict.nav.openMenu}
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-white/25 text-white lg:hidden"
             >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <Menu size={20} />
             </button>
           </div>
         </div>
-      </motion.header>
+      </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ clipPath: "circle(0% at 100% 0%)" }}
-            animate={{ clipPath: "circle(150% at 100% 0%)" }}
-            exit={{ clipPath: "circle(0% at 100% 0%)" }}
-            transition={{ duration: 0.7, ease }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-ink px-6 pb-10 pt-28 lg:hidden"
-            data-lenis-prevent
+      {/* Mobile drawer */}
+      <div
+        className={`fixed inset-0 z-[60] bg-bg transition-transform duration-300 lg:hidden ${
+          open ? "translate-x-0" : "pointer-events-none translate-x-full"
+        }`}
+        aria-hidden={!open}
+      >
+        <div className="container-x flex h-[76px] items-center justify-between border-b border-line">
+          <Logo />
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-line"
           >
-            <div className="pointer-events-none absolute inset-0 grid-lines opacity-60" />
-            <nav className="relative flex flex-col">
-              {navKeys.map((l, i) => (
-                <motion.div
-                  key={l.key}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + i * 0.06, duration: 0.6, ease }}
-                >
-                  <Link
-                    href={href(l.href)}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex items-center justify-between border-b border-white/10 py-5 text-3xl font-semibold",
-                      isActive(l.href) ? "text-gold" : "text-white",
-                    )}
-                  >
-                    {dict.nav[l.key]}
-                    <ArrowUpRight className="h-6 w-6 text-white/30 rtl:-scale-x-100" />
-                  </Link>
-                </motion.div>
-              ))}
-            </nav>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="relative mt-10 space-y-4 text-mist"
-            >
-              <LangSwitch className="w-fit" />
-              <a href={contact.phoneHref} className="block text-lg text-white" dir="ltr">
-                {contact.phone}
-              </a>
-              <a href={`mailto:${contact.email}`} className="block">
-                {contact.email}
-              </a>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="container-x h-[calc(100%-76px)] overflow-y-auto pb-10">
+          <ul className="divide-y divide-line">
+            {nav.map((n) => (
+              <li key={n.href} className="py-4">
+                <Link href={n.href} className="block font-display text-xl font-semibold">
+                  {n.label}
+                </Link>
+                {n.label === "Services" && (
+                  <ul className="mt-3 grid gap-2 pl-1">
+                    {services.map((s) => (
+                      <li key={s.slug}>
+                        <Link href={`/services/${s.slug}`} className="text-sm text-muted hover:text-accent">
+                          {s.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+          <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-6 w-full">
+            Let&apos;s Ride Now!
+          </a>
+        </div>
+      </div>
+    </header>
   )
 }
