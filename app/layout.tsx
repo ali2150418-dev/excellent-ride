@@ -6,6 +6,7 @@ import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp"
 import { ScrollEffects } from "@/components/ScrollEffects"
+import { CarRoad } from "@/components/CarRoad"
 import { pages, siteUrl } from "@/lib/site"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" })
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Script id="theme-init" strategy="beforeInteractive">{themeScript}</Script>
         <ScrollEffects />
+        <CarRoad />
         <Header />
         <main>{children}</main>
         <Footer />
